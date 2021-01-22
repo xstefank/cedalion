@@ -3,8 +3,6 @@ pipeline {
 
     environment {
         HERA_DEBUG = true
-        HERO_HOME = './hera/'
-        HERA_SSH_KEY = '/var/jenkins_home/jenkins.rsa'
         HERA_USERNAME = 'jenkins'
         HERA_HOSTNAME = 'thunder.next'
         MAVEN_HOME = '/opt/tools/apache-maven-3.6.3'
@@ -21,12 +19,11 @@ pipeline {
                 }
 
                 dir('harmonia') {
-                  git branch: 'master', url: 'https://github.com/rpelisse/harmonia.git'
+                  git branch: 'mvn_debug', url: 'https://github.com/rpelisse/harmonia.git'
                 }
 
                 script {
                     env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/build-wrapper.sh"
-                    env.HERA_HOME = "${env.WORKSPACE}/hera/"
                     env.MAVEN_SETTINGS_XML = "${env.MAVEN_HOME}/conf/settings.xml"
                     env.MAVEN_OPTS = "${env.MAVEN_OPTS}"
                     // tweaks for wfly build
@@ -52,15 +49,14 @@ pipeline {
                 }
                 echo "BUILD_COMMAND: ${env.BUILD_COMMAND}"
                 // Start container
-		        sh label: '', script: "./hera/hera.sh run > ${WORKSPACE}/cid-${BUILD_ID}.txt"
-			    script {
-                    env.CID=readFile("${env.WORKSPACE}/cid-${BUILD_ID}.txt")
-                }
+		        sh label: '', script: "${WORKSPACE}/hera/hera.sh run"
             }
         }
 		stage ('Build') {
             when { expression { env.BUILD_COMMAND == 'build' } }
             steps {
+//                git "${env.GIT_REPOSITORY_URL}" # this, delete hera & harmonia
+                sh label: '', script: 'pwd'
                 sh label: '', script: './hera/hera.sh job'
 				archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
                 // TODO trigger testsuite
