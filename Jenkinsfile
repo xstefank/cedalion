@@ -52,9 +52,9 @@ pipeline {
                 }
                 echo "BUILD_COMMAND: ${env.BUILD_COMMAND}"
                 // Start container
-		        sh label: '', script: "./hera/hera.sh run > ${WORKSPACE}/cid.txt"
+		        sh label: '', script: "./hera/hera.sh run > ${WORKSPACE}/cid-${BUILD_ID}.txt"
 			    script {
-                    env.CID=readFile("${env.WORKSPACE}/cid.txt")
+                    env.CID=readFile("${env.WORKSPACE}/cid-${BUILD_ID}.txt")
                 }
             }
         }
