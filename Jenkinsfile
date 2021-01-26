@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Prep') {
             steps {
-                cleanWs()
+                //cleanWs()
                 git "${env.GIT_REPOSITORY_URL}"
                 dir('hera') {
                   git 'https://github.com/rpelisse/hera.git'
