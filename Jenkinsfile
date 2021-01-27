@@ -11,7 +11,9 @@ pipeline {
         stage('Prep') {
             steps {
                 //cleanWs()
-                git branch: "${env.GIT_BRANCH}", url: "${env.GIT_REPOSITORY_URL}"
+                git url: "${env.GIT_REPOSITORY_URL}"
+                // workaround intepol. issue in git: module
+                sh label: '', script: "git checkout ${env.GIT_BRANCH} -b ${env.GIT_BRANCH}-${env.BUILD_ID}"
                 dir('hera') {
                   git 'https://github.com/rpelisse/hera.git'
                 }
@@ -34,6 +36,7 @@ pipeline {
                         env.MAVEN_OPTS = "-Dhttps.protocols=TLSv1.2"
                     // assert if job task is build or testsuite
 					env.BUILD_COMMAND = "no-task"
+                    echo "${env.JOB_NAME}"
                     if ( "${env.JOB_NAME}".endsWith("-build") ) {
                         env.BUILD_COMMAND = "build"
                     }
