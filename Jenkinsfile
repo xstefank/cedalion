@@ -11,7 +11,7 @@ pipeline {
         stage('Prep') {
             steps {
                 //cleanWs()
-                git "${env.GIT_REPOSITORY_URL}"
+                git branch: "${env.GIT_BRANCH}", url: "${env.GIT_REPOSITORY_URL}"
                 dir('hera') {
                   git 'https://github.com/rpelisse/hera.git'
                 }
