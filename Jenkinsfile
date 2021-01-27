@@ -5,8 +5,6 @@ pipeline {
         HERA_DEBUG = true
         HERA_USERNAME = 'jenkins'
         HERA_HOSTNAME = 'thunder.next'
-        MAVEN_HOME = '/opt/tools/apache-maven-3.6.3'
-        JAVA_HOME = '/usr/lib/jvm/java-1.8.0-openjdk'
     }
 
     stages {
@@ -24,8 +22,13 @@ pipeline {
 
                 script {
                     env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/build-wrapper.sh"
+
+                    env.JAVA_HOME = "${env.JAVA_HOME}"
+                    env.MAVEN_HOME = "${env.MAVEN_HOME}"
                     env.MAVEN_SETTINGS_XML = "${env.MAVEN_HOME}/conf/settings.xml"
                     env.MAVEN_OPTS = "${env.MAVEN_OPTS}"
+                    env.TEST_TO_RUN = "${env.TEST_TO_RUN}"
+                    env.RERUN_FAILING_TESTS = "${env.RERUN_FAILING_TESTS}"
                     // tweaks for wfly build
                     if ( ! "".equals(env.MAVEN_OPTS) )
                         env.MAVEN_OPTS = "-Dhttps.protocols=TLSv1.2"
