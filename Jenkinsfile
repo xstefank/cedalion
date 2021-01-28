@@ -27,9 +27,11 @@ pipeline {
                     }
                     echo "BUILD_COMMAND:[${env.BUILD_COMMAND}]"
                 }
-                git url: "${env.GIT_REPOSITORY_URL}"
-                // workaround intepol. issue in git: module
-                sh label: '', script: "git checkout ${env.GIT_BRANCH} -b ${env.GIT_BRANCH}-${env.BUILD_ID}"
+                dir('workdir') {
+                  git url: "${env.GIT_REPOSITORY_URL}"
+                  // workaround intepol. issue in git: module
+                  sh label: '', script: "git checkout ${env.GIT_BRANCH} -b ${env.GIT_BRANCH}-${env.BUILD_ID}"
+                }
                 dir('hera') {
                   git 'https://github.com/rpelisse/hera.git'
                 }
