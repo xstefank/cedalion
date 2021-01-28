@@ -70,7 +70,7 @@ pipeline {
                 }
                 echo "BUILD_COMMAND: ${env.BUILD_COMMAND}"
                 // Start container
-		        sh label: '', script: "${WORKSPACE}/hera/hera.sh run"
+		        sh label: '', script: "${env.WORKSPACE}/hera/hera.sh run"
             }
         }
 		stage ('Build') {
@@ -78,7 +78,7 @@ pipeline {
             steps {
 //                git "${env.GIT_REPOSITORY_URL}" # this, delete hera & harmonia
                 sh label: '', script: 'pwd'
-                sh label: '', script: './hera/hera.sh job'
+                sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
 				archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
                 // TODO trigger testsuite
             }
@@ -86,13 +86,13 @@ pipeline {
 		stage ('Testsuite') {
             when { expression { env.BUILD_COMMAND == 'testsuite' } }
             steps {
-                sh label: '', script: './hera/hera.sh job'
+              sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
             }
         }
     }
     post {
         always {
-            sh label: '', script: "./hera/hera.sh stop"
+            sh label: '', script: "${env.WORKSPACE}/hera/hera.sh stop"
         }
     }
 }
