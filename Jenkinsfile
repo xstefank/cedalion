@@ -11,6 +11,22 @@ pipeline {
         stage('Prep') {
             steps {
                 //cleanWs()
+                script {
+                    // assert if job task is build or testsuite
+					env.BUILD_COMMAND = "no-task"
+                    echo "JOB_NAME:[${env.JOB_NAME}]"
+                    if ( "${env.JOB_NAME}".endsWith("-build") ) {
+                      env.BUILD_COMMAND = "build"
+                    } else {
+  					if ( "${env.JOB_NAME}".endsWith("-testsuite") ) {
+                        env.BUILD_COMMAND = "testsuite"
+                      } else {
+                         currentBuild.result = 'ABORTED'
+                         error("Invalid JOB_NAME: ${env.JOB_NAME}, can't determine BUILD_COMMAND (missing -build or -testsuite- suffix). Abort.")
+                      }
+                    }
+                    echo "BUILD_COMMAND:[${env.BUILD_COMMAND}]"
+                }
                 git url: "${env.GIT_REPOSITORY_URL}"
                 // workaround intepol. issue in git: module
                 sh label: '', script: "git checkout ${env.GIT_BRANCH} -b ${env.GIT_BRANCH}-${env.BUILD_ID}"
@@ -32,16 +48,10 @@ pipeline {
                     env.TEST_TO_RUN = "${env.TEST_TO_RUN}"
                     env.RERUN_FAILING_TESTS = "${env.RERUN_FAILING_TESTS}"
                     // tweaks for wfly build
-                    if ( ! "".equals(env.MAVEN_OPTS) )
+                    if ( ! "".equals(env.MAVEN_OPTS) ) {
                         env.MAVEN_OPTS = "-Dhttps.protocols=TLSv1.2"
-                    // assert if job task is build or testsuite
-					env.BUILD_COMMAND = "no-task"
-                    echo "${env.JOB_NAME}"
-                    if ( "${env.JOB_NAME}".endsWith("-build") ) {
-                        env.BUILD_COMMAND = "build"
                     }
-					if ( "${env.JOB_NAME}".endsWith("-testsuite") ) {
-						env.BUILD_COMMAND = "testsuite"
+					if ( "${env.BUILD_COMMAND}".equals("testsuite") ) {
                         def parent_jobname = "${env.JOB_NAME}".replace("-testsuite","-build")
                         //assert parent_jobname.isNotNull or empty
                         echo "Fetching last successful build ID of parent job:" + parent_jobname
@@ -74,13 +84,6 @@ pipeline {
                 sh label: '', script: './hera/hera.sh job'
             }
         }
-		stage ('No task provided') {
-            when { expression { env.BUILD_COMMAND == "no-task" } }
-            steps {
-              echo 'No task'
-              //echo "INVALID BUILD_COMMAND PROVIDED: ${BUILD_COMMAND}".
-			}
-		}
     }
     post {
         always {
