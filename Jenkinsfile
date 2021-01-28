@@ -26,11 +26,14 @@ pipeline {
                       }
                     }
                     echo "BUILD_COMMAND:[${env.BUILD_COMMAND}]"
+                    // warning, GIT_BRANCH alreads points to pipeline's branch
+                    echo "GIT_REPOSITORY_BRANCH:[${env.GIT_REPOSITORY_BRANCH}]"
                 }
                 dir('workdir') {
-                  git url: "${env.GIT_REPOSITORY_URL}"
+                  git url: "${env.GIT_REPOSITORY_URL}",
+                      branch: "${env.GIT_REPOSITORY_BRANCH}"
                   // workaround intepol. issue in git: module
-                  sh label: '', script: "git checkout ${env.GIT_BRANCH} -b ${env.GIT_BRANCH}-${env.BUILD_ID}"
+                  //sh label: '', script: "git checkout ${env.GIT_BRANCH} -b ${env.GIT_BRANCH}-${env.BUILD_ID}"
                 }
                 dir('hera') {
                   git 'https://github.com/rpelisse/hera.git'
