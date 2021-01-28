@@ -95,4 +95,16 @@ pipeline {
             sh label: '', script: "${env.WORKSPACE}/hera/hera.sh stop"
         }
     }
+//    publishers {
+//       findText {
+//            textFinders {
+//              textFinder {
+//                   regexp '.INFO. BUILD FAILURE'
+//                   changeCondition 'MATCH_FOUND'
+//               alsoCheckConsoleOutput true
+//                   buildResult 'UNSTABLE'
+//        }
+//      }
+//    }
+//  }
 }
