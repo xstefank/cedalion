@@ -15,6 +15,10 @@ pipeline {
                     // assert if job task is build or testsuite
 					env.BUILD_COMMAND = "no-task"
                     echo "JOB_NAME:[${env.JOB_NAME}]"
+                    if ( env.JAVA_HOME == null ) {
+                      env.JAVA_HOME = "/opt/oracle/java"
+                    }
+                    echo "JAVA_HOME:[${env.JAVA_HOME}]"
                     if ( "${env.JOB_NAME}".endsWith("-build") ) {
                       env.BUILD_COMMAND = "build"
                     } else {
