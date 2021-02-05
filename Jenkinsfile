@@ -60,7 +60,7 @@ pipeline {
                         env.MAVEN_OPTS = "-Dhttps.protocols=TLSv1.2"
                     }
                     echo "HERE: ${env.BUILD_COMMAND}"
-					if ( "${env.BUILD_COMMAND}".equals("testsuite") ) {
+					if ( "${env.BUILD_COMMAND}".startsWith("testsuite") ) {
                         def parent_jobname = "${env.JOB_NAME}".replace("-testsuite","-build")
                         //assert parent_jobname.isNotNull or empty
                         echo "Fetching last successful build ID of parent job:" + parent_jobname
