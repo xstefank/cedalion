@@ -96,11 +96,13 @@ pipeline {
     }
     post {
         always {
+            script {
 			try {
         		sh label: '', script: "${env.WORKSPACE}/hera/hera.sh stop"
     		} catch (err) {
         		echo "Error while deleting container: ${err}"
     		}
+            }
         }
     }
 //    publishers {
