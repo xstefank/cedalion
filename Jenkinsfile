@@ -59,6 +59,7 @@ pipeline {
                     if ( ! "".equals(env.MAVEN_OPTS) ) {
                         env.MAVEN_OPTS = "-Dhttps.protocols=TLSv1.2"
                     }
+                    echo "HERE: ${env.BUILD_COMMAND}"
 					if ( "${env.BUILD_COMMAND}".equals("testsuite") ) {
                         def parent_jobname = "${env.JOB_NAME}".replace("-testsuite","-build")
                         //assert parent_jobname.isNotNull or empty
