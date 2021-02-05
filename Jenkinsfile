@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        HERA_DEBUG = true
         HERA_USERNAME = 'jenkins'
         HERA_HOSTNAME = 'thunder.next'
     }
