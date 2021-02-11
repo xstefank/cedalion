@@ -96,25 +96,16 @@ pipeline {
     }
     post {
         always {
+			findText(textFinders: [
+                textFinder(regexp: /.INFO. BUILD FAILURE/, alsoCheckConsoleOutput: true, buildResult: 'UNSTABLE', changeCondition: 'MATCH_FOUND')
+            ])
             script {
-			try {
-        		sh label: '', script: "${env.WORKSPACE}/hera/hera.sh stop"
-    		} catch (err) {
-        		echo "Error while deleting container: ${err}"
-    		}
+			    try {
+        		    sh label: '', script: "${env.WORKSPACE}/hera/hera.sh stop"
+    		    } catch (err) {
+        		    echo "Error while deleting container: ${err}"
+    		    }
             }
         }
     }
-//    publishers {
-//       findText {
-//            textFinders {
-//              textFinder {
-//                   regexp '.INFO. BUILD FAILURE'
-//                   changeCondition 'MATCH_FOUND'
-//               alsoCheckConsoleOutput true
-//                   buildResult 'UNSTABLE'
-//        }
-//      }
-//    }
-//  }
 }
