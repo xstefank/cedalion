@@ -50,7 +50,7 @@ pipeline {
                     env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/build-wrapper.sh"
 					if ( "${env.BUILD_COMMAND}".startsWith("testsuite") ) {
                         def parent_jobname = "${env.JOB_NAME}".replace("-testsuite","-build")
-                        //assert parent_jobname.isNotNull or empty
+                        assert parent_jobname.isNotNull or empty
                         echo "Fetching last successful build ID of parent job:" + parent_jobname
                         def lastSuccessfulBuildId = sh(script: "curl -s http://thunder.next:8080/job/${parent_jobname}/lastSuccessfulBuild/buildNumber", returnStdout: true)
                         assert lastSuccessfulBuildId.isNumber()
