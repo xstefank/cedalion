@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+		string(name: 'RERUN_FAILING_TESTS'; defaultValue: '0', description: 'How many time should Maven try to rerun failing tests')
+    }
+
     environment {
         HERA_USERNAME = 'jenkins'
         HERA_HOSTNAME = 'thunder.next'
