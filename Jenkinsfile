@@ -39,7 +39,7 @@ pipeline {
                       branch: "${env.GIT_REPOSITORY_BRANCH}"
                 }
                 dir('hera') {
-                  git 'https://github.com/rpelisse/hera.git'
+                  git 'https://github.com/jboss-set/hera.git'
                 }
 
                 dir('harmonia') {
