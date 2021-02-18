@@ -57,9 +57,7 @@ pipeline {
                     env.MAVEN_HOME = "${env.MAVEN_HOME}"
                     env.MAVEN_SETTINGS_XML = "${env.MAVEN_HOME}/conf/settings.xml"
                     env.MAVEN_OPTS = "${env.MAVEN_OPTS}"
-                    env.TEST_TO_RUN = "${env.TEST_TO_RUN}"
-                    env.RERUN_FAILING_TESTS = "${env.RERUN_FAILING_TESTS}"
-                    // tweaks for wfly build
+                    // tweaks for wfly build, to be moved to Harmonia
                     if ( ! "".equals(env.MAVEN_OPTS) ) {
                         env.MAVEN_OPTS = "-Dhttps.protocols=TLSv1.2"
                     }
@@ -101,7 +99,8 @@ pipeline {
     post {
         always {
 			findText(textFinders: [
-                textFinder(regexp: /.INFO. BUILD FAILURE/, alsoCheckConsoleOutput: true, buildResult: 'UNSTABLE', changeCondition: 'MATCH_FOUND')
+                textFinder(regexp: /.INFO. BUILD FAILURE/, alsoCheckConsoleOutput: true, buildResult: 'UNSTABLE', changeCondition: 'MATCH_FOUND'),
+                textFinder(regexp: /.INFO. BUILD ERROR/, alsoCheckConsoleOutput: true, buildResult: 'FAILURE', changeCondition: 'MATCH_FOUND')
             ])
             script {
 			    try {
