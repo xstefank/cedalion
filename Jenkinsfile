@@ -2,7 +2,9 @@ pipeline {
     agent any
 
     parameters {
-		string(name: 'RERUN_FAILING_TESTS'; defaultValue: '0', description: 'How many time should Maven try to rerun failing tests')
+		string(name: 'RERUN_FAILING_TESTS', defaultValue: '0', description: 'How many time should Maven try to rerun failing tests')
+        // -Dhttps.protocols=TLSv1.2 needs to move to Harmonia?
+        string(name: 'MAVEN_OPTS', defaultValue: '-Dhttps.protocols=TLSv1.2', description: 'Extra settings for Maven')
     }
 
     environment {
@@ -18,10 +20,6 @@ pipeline {
                     // assert if job task is build or testsuite
 					env.BUILD_COMMAND = "no-task"
                     echo "JOB_NAME:[${env.JOB_NAME}]"
-                    if ( env.JAVA_HOME == null ) {
-                      env.JAVA_HOME = "/opt/oracle/java"
-                    }
-                    echo "JAVA_HOME:[${env.JAVA_HOME}]"
                     if ( "${env.JOB_NAME}".endsWith("-build") ) {
                       env.BUILD_COMMAND = "build"
                     } else {
@@ -33,14 +31,12 @@ pipeline {
                       }
                     }
                     echo "BUILD_COMMAND:[${env.BUILD_COMMAND}]"
-                    // warning, GIT_BRANCH alreads points to pipeline's branch
+                    // warning, GIT_BRANCH var alreads points to pipeline's branch
                     echo "GIT_REPOSITORY_BRANCH:[${env.GIT_REPOSITORY_BRANCH}]"
                 }
                 dir('workdir') {
                   git url: "${env.GIT_REPOSITORY_URL}",
                       branch: "${env.GIT_REPOSITORY_BRANCH}"
-                  // workaround intepol. issue in git: module
-                  //sh label: '', script: "git checkout ${env.GIT_BRANCH} -b ${env.GIT_BRANCH}-${env.BUILD_ID}"
                 }
                 dir('hera') {
                   git 'https://github.com/rpelisse/hera.git'
@@ -52,16 +48,6 @@ pipeline {
 
                 script {
                     env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/build-wrapper.sh"
-
-                    env.JAVA_HOME = "${env.JAVA_HOME}"
-                    env.MAVEN_HOME = "${env.MAVEN_HOME}"
-                    env.MAVEN_SETTINGS_XML = "${env.MAVEN_HOME}/conf/settings.xml"
-                    env.MAVEN_OPTS = "${env.MAVEN_OPTS}"
-                    // tweaks for wfly build, to be moved to Harmonia
-                    if ( ! "".equals(env.MAVEN_OPTS) ) {
-                        env.MAVEN_OPTS = "-Dhttps.protocols=TLSv1.2"
-                    }
-                    echo "HERE: ${env.BUILD_COMMAND}"
 					if ( "${env.BUILD_COMMAND}".startsWith("testsuite") ) {
                         def parent_jobname = "${env.JOB_NAME}".replace("-testsuite","-build")
                         //assert parent_jobname.isNotNull or empty
@@ -82,7 +68,6 @@ pipeline {
 		stage ('Build') {
             when { expression { env.BUILD_COMMAND == 'build' } }
             steps {
-//                git "${env.GIT_REPOSITORY_URL}" # this, delete hera & harmonia
                 sh label: '', script: 'pwd'
                 sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
 				archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
