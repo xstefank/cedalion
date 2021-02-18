@@ -1,3 +1,11 @@
+def lookupLastSuccessfulBuildId(String parent_jobname) {
+  echo "Fetching last successful build ID of parent job:" + parent_jobname
+  def lastSuccessfulBuildId = sh(script: "curl -s http://thunder.next:8080/job/${parent_jobname}/lastSuccessfulBuild/buildNumber", returnStdout: true)
+  echo "BUILD_ID: " + lastSuccessfulBuildId
+  return lastSuccessfulBuildId
+}
+
+
 pipeline {
     agent any
 
@@ -50,14 +58,11 @@ pipeline {
                     env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/build-wrapper.sh"
 					if ( "${env.BUILD_COMMAND}".startsWith("testsuite") ) {
                         def parent_jobname = "${env.JOB_NAME}".replace("-testsuite","-build")
-                        assert parent_jobname.isNotNull or empty
-                        echo "Fetching last successful build ID of parent job:" + parent_jobname
-                        def lastSuccessfulBuildId = sh(script: "curl -s http://thunder.next:8080/job/${parent_jobname}/lastSuccessfulBuild/buildNumber", returnStdout: true)
+                        assert ! "".equals(parent_jobname)
+                        def lastSuccessfulBuildId = lookupLastSuccessfulBuildId(parent_jobname)
                         assert lastSuccessfulBuildId.isNumber()
-                        echo "BUILD_ID: " + lastSuccessfulBuildId
                         env.PARENT_JOB_VOLUME = "/home/jenkins/jobs/${parent_jobname}/builds/${lastSuccessfulBuildId}/archive"
-                        // add hera to checkout that folder exists
-                        echo "${env.PARENT_JOB_VOLUME}"
+                        echo "Parent job workspace volume: ${env.PARENT_JOB_VOLUME}"
 					}
                 }
                 echo "BUILD_COMMAND: ${env.BUILD_COMMAND}"
