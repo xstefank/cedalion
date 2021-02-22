@@ -1,0 +1,51 @@
+pipeline {
+    agent any
+
+    parameters {
+       string(name: 'JAVA_HOME', defaultValue: '/opt/oracle/java/', description: 'Java home')
+       string(name: 'MAVEN_HOME', defaultValue: '/opt/tools/apache-maven-3.6.3', description: 'Maven home')
+       string(name: 'GIT_REPOSITORY_URL', defaultValue: 'https://github.com/jboss-set/aphrodite.git', description: 'Github repo')
+       string(name: 'GIT_REPOSITORY_BRANCH', defaultValue: 'master', description: 'Github repo')
+       string(name: 'MAVEN_OPTS', defaultValue: '-Dhttps.protocols=TLSv1.2', description: 'Extra settings for Maven')
+    }
+
+    environment {
+        HERA_HOSTNAME = 'thunder.next'
+    }
+
+    stages {
+        stage('Prep') {
+            steps {
+                //cleanWs()
+                dir('hera') {
+                  git 'https://github.com/jboss-set/hera.git'
+                }
+
+                script {
+                  // Start container
+                  env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/ci-wrapper.sh"
+                  git url: "${env.GIT_REPOSITORY_URL}",
+                      branch: "${env.GIT_REPOSITORY_BRANCH}"
+		          sh label: '', script: "${env.WORKSPACE}/hera/hera.sh run"
+                }
+            }
+        }
+		stage ('Build') {
+            steps {
+                sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
+				archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
+            }
+        }
+    }
+    post {
+        always {
+            script {
+			    try {
+        		    sh label: '', script: "${env.WORKSPACE}/hera/hera.sh stop"
+    		    } catch (err) {
+        		    echo "Error while deleting container: ${err}"
+    		    }
+            }
+        }
+    }
+}
