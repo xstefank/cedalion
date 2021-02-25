@@ -4,7 +4,6 @@ pipeline {
     parameters {
        string(name: 'JAVA_HOME', defaultValue: '/opt/oracle/java/', description: 'Java home')
        string(name: 'MAVEN_HOME', defaultValue: '/opt/tools/apache-maven-3.6.3', description: 'Maven home')
-       string(name: 'MAVEN_OPTS', defaultValue: '-Dhttps.protocols=TLSv1.2', description: 'Extra settings for Maven')
     }
 
     environment {
