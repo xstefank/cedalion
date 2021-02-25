@@ -21,7 +21,7 @@ pipeline {
 
                 script {
                   // Start container
-                  env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/ci-wrapper.sh"
+                  env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/mvn-wrapper.sh"
                   git url: "${env.GIT_REPOSITORY_URL}",
                       branch: "${env.GIT_REPOSITORY_BRANCH}"
 		          sh label: '', script: "${env.WORKSPACE}/hera/hera.sh run"
