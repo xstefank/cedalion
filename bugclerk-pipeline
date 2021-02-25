@@ -32,6 +32,7 @@ pipeline {
         stage ('Build') {
             steps {
                 sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
+                publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '.', reportFiles: 'bugclerk-report.html', reportName: 'HTML Report', reportTitles: ''])
                 archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
             }
         }
@@ -45,7 +46,7 @@ pipeline {
                     echo "Error while deleting container: ${err}"
                 }
             }
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '.', reportFiles: 'bugclerk-report.          html', reportName: 'HTML Report', reportTitles: ''])
+            //publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '.', reportFiles: 'bugclerk-report.html', reportName: 'HTML Report', reportTitles: ''])
         }
     }
 }
