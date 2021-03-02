@@ -1,11 +1,14 @@
 pipeline {
     agent any
     triggers { cron("@hourly") }
+
+    options {
+      buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
+    }
     parameters {
        string(name: 'JAVA_HOME', defaultValue: '/opt/oracle/java/', description: 'Java home')
        string(name: 'MAVEN_HOME', defaultValue: '/opt/tools/apache-maven-3.6.3', description: 'Maven home')
        string(name: 'MAVEN_OPTS', defaultValue: '', description: 'Extra settings for Maven')
-       //'-Dhttps.protocols=TLSv1.2', description: 'Extra settings for Maven')
     }
 
     environment {
@@ -46,7 +49,6 @@ pipeline {
                     echo "Error while deleting container: ${err}"
                 }
             }
-            //publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '.', reportFiles: 'bugclerk-report.html', reportName: 'HTML Report', reportTitles: ''])
         }
     }
 }
