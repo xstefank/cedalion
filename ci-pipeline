@@ -1,9 +1,9 @@
 pipeline {
     agent any
 
-	options {
-    	buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '2'))
-  	}
+   options {
+       buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '2'))
+     }
 
     parameters {
        string(name: 'JAVA_HOME', defaultValue: '/opt/oracle/java/', description: 'Java home')
@@ -27,14 +27,14 @@ pipeline {
                   env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/mvn-wrapper.sh"
                   git url: "${env.GIT_REPOSITORY_URL}",
                       branch: "${env.GIT_REPOSITORY_BRANCH}"
-		          sh label: '', script: "${env.WORKSPACE}/hera/hera.sh run"
+                sh label: '', script: "${env.WORKSPACE}/hera/hera.sh run"
                 }
             }
         }
-		stage ('Build') {
+      stage ('Build') {
             steps {
                 sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
-				archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
+            archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
                 junit '**/target/surefire-reports/*.xml'
             }
         }
@@ -42,11 +42,11 @@ pipeline {
     post {
         always {
             script {
-			    try {
-        		    sh label: '', script: "${env.WORKSPACE}/hera/hera.sh stop"
-    		    } catch (err) {
-        		    echo "Error while deleting container: ${err}"
-    		    }
+             try {
+                  sh label: '', script: "${env.WORKSPACE}/hera/hera.sh stop"
+              } catch (err) {
+                  echo "Error while deleting container: ${err}"
+              }
             }
         }
     }
