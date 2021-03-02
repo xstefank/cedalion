@@ -58,6 +58,9 @@ pipeline {
                 }
 
                 script {
+                    if ( env.RERUN_FAILING_TESTS == null || "".equals("${env.RERUN_FAILING_TESTS}") ) {
+                      env.RERUN_FAILING_TESTS = 0
+                    }
                     env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/build-wrapper.sh"
 					if ( "${env.BUILD_COMMAND}".startsWith("testsuite") ) {
                         def parent_jobname = "${env.JOB_NAME}".replace("-testsuite","-build")
