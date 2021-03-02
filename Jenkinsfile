@@ -9,6 +9,10 @@ def lookupLastSuccessfulBuildId(String parent_jobname) {
 pipeline {
     agent any
 
+   options {
+        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
+     }
+
     parameters {
 		string(name: 'RERUN_FAILING_TESTS', defaultValue: '0', description: 'How many time should Maven try to rerun failing tests')
         // -Dhttps.protocols=TLSv1.2 needs to move to Harmonia?
