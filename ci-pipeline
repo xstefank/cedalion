@@ -29,6 +29,12 @@ pipeline {
 
                 timeout(time: 10) {
                     script {
+                        // warning, GIT_BRANCH var alreads points to pipeline's branch
+                        if ( env.GIT_REPOSITORY_BRANCH == null || "".equals("${env.GIT_REPOSITORY_BRANCH}") ) {
+                          env.GIT_REPOSITORY_BRANCH = "master"
+                        }
+                        echo "GIT_REPOSITORY_BRANCH:[${env.GIT_REPOSITORY_BRANCH}]"
+
                         // Start container
                         env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/mvn-wrapper.sh"
                         git url: "${env.GIT_REPOSITORY_URL}",
