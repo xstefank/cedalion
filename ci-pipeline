@@ -1,7 +1,12 @@
 pipeline {
     agent any
 
-   options {
+    triggers {
+        cron('@hourly')
+        pollSCM('*/10 * * * *')
+    }
+
+    options {
        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '2'))
      }
 
