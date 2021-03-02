@@ -27,12 +27,14 @@ pipeline {
                   git 'https://github.com/jboss-set/hera.git'
                 }
 
-                script {
-                  // Start container
-                  env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/mvn-wrapper.sh"
-                  git url: "${env.GIT_REPOSITORY_URL}",
-                      branch: "${env.GIT_REPOSITORY_BRANCH}"
-                sh label: '', script: "${env.WORKSPACE}/hera/hera.sh run"
+                timeout(time: 10) {
+                    script {
+                        // Start container
+                        env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/mvn-wrapper.sh"
+                        git url: "${env.GIT_REPOSITORY_URL}",
+                            branch: "${env.GIT_REPOSITORY_BRANCH}"
+                        sh label: '', script: "${env.WORKSPACE}/hera/hera.sh run"
+                    }
                 }
             }
         }
