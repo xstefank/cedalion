@@ -40,7 +40,7 @@ pipeline {
                     }
                     echo "BUILD_COMMAND:[${env.BUILD_COMMAND}]"
                     // warning, GIT_BRANCH var alreads points to pipeline's branch
-                    if ( env.GIT_REPOSITORY_BRANCH == null && "".equals("${env.GIT_REPOSITORY_BRANCH}") ) {
+                    if ( env.GIT_REPOSITORY_BRANCH == null || "".equals("${env.GIT_REPOSITORY_BRANCH}") ) {
                       env.GIT_REPOSITORY_BRANCH = "master"
                     }
                     echo "GIT_REPOSITORY_BRANCH:[${env.GIT_REPOSITORY_BRANCH}]"
