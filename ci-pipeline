@@ -31,6 +31,7 @@ pipeline {
             steps {
                 sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
 				archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
+                junit '**/target/surefire-reports/*.xml'
             }
         }
     }
