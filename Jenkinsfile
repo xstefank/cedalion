@@ -85,7 +85,7 @@ pipeline {
             steps {
                 sh label: '', script: 'pwd'
                 sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
-            archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
+                archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
                 // TODO trigger testsuite
             }
         }

@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     triggers {
-        cron('@hourly')
-        pollSCM('*/10 * * * *')
+        cron(env.CRON_PATTERN)
+        pollSCM(env.POLL_PATTERN)
     }
 
     options {
@@ -13,6 +13,8 @@ pipeline {
     parameters {
        string(name: 'JAVA_HOME', defaultValue: '/opt/oracle/java/', description: 'Java home')
        string(name: 'MAVEN_HOME', defaultValue: '/opt/tools/apache-maven-3.6.3', description: 'Maven home')
+       string(name: 'CRON_PATTERN', defaultValue: 'H/5 * * * *', description: 'cron pattern to trigger the job')
+       string(name: 'POLL_PATTERN', defaultValue: 'H/5 * * * *', description: 'cron pattern to poll the SCM')
     }
 
     environment {
