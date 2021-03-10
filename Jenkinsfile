@@ -58,7 +58,7 @@ pipeline {
                 }
 
                 dir('harmonia') {
-                  git branch: 'mvn_debug', url: 'https://github.com/rpelisse/harmonia.git'
+                  git branch: 'olympus', url: 'https://github.com/jboss-set/harmonia.git'
                 }
 
                 script {

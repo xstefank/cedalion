@@ -7,7 +7,7 @@ pipeline {
 
     parameters {
        string(name: 'TO_ADDRESS', defaultValue: 'rpelisse@redhat.com', description: '')
-       string(name: 'RULE_NAME', defaultValue: 'eap73', description: '')
+       string(name: 'RULE_NAME', defaultValue: 'eap-73', description: '')
        string(name: 'TARGET_DIR', defaultValue: 'jbosseap7', description: '')
        string(name: 'REPORT_TITLE', defaultValue: 'JBoss EAP 7.3.x', description: '')
        string(name: 'LOGGER_PROJECT_CODE', defaultValue: 'eap7.3.x', description: '')
@@ -39,7 +39,7 @@ pipeline {
                 }
 
                 dir('harmonia') {
-                  git branch: 'mvn_debug', url: 'https://github.com/rpelisse/harmonia.git'
+                  git branch: 'olympus', url: 'https://github.com/jboss-set/harmonia.git'
                 }
 
                 script {
