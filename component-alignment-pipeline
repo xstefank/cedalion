@@ -1,21 +1,11 @@
 pipeline {
     agent any
 
-   options {
-        buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
-     }
-
-    parameters {
-       string(name: 'TO_ADDRESS', defaultValue: 'rpelisse@redhat.com', description: '')
-       string(name: 'RULE_NAME', defaultValue: 'eap-73', description: '')
-       string(name: 'TARGET_DIR', defaultValue: 'jbosseap7', description: '')
-       string(name: 'REPORT_TITLE', defaultValue: 'JBoss EAP 7.3.x', description: '')
-       string(name: 'LOGGER_PROJECT_CODE', defaultValue: 'eap7.3.x', description: '')
-       string(name: 'GIT_REPOSITORY_BRANCH', defaultValue: '7.3.x', description: '')
+    options {
+      buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
     }
 
     environment {
-        HERA_USERNAME = 'jenkins'
         HERA_HOSTNAME = 'thunder.next'
     }
 
@@ -43,7 +33,7 @@ pipeline {
                 }
 
                 script {
-                    env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/harmonia-wrapper.sh"
+                    env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/build-wrapper.sh"
                 }
                 // Start container
                 sh label: '', script: "${env.WORKSPACE}/hera/hera.sh run"

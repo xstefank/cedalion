@@ -5,7 +5,6 @@ def lookupLastSuccessfulBuildId(String parent_jobname) {
   return lastSuccessfulBuildId
 }
 
-
 pipeline {
     agent any
 
@@ -86,7 +85,7 @@ pipeline {
                 sh label: '', script: 'pwd'
                 sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
                 archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
-                // TODO trigger testsuite
+                build wait: false, job: "${env.JOB_NAME}".replaceAll("-build","-testsuite")
             }
         }
       stage ('Testsuite') {
