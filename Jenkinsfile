@@ -29,13 +29,13 @@ pipeline {
             steps {
                 //cleanWs()
                 script {
-                    // assert if job task is build or testsuite
-               env.BUILD_COMMAND = "no-task"
-                    echo "JOB_NAME:[${env.JOB_NAME}]"
-                    if ( "${env.JOB_NAME}".endsWith("-build") ) {
-                      env.BUILD_COMMAND = "build"
-                    } else {
-                 if ( "${env.JOB_NAME}".endsWith("-testsuite") ) {
+                // assert if job task is build or testsuite
+                env.BUILD_COMMAND = "no-task"
+                echo "JOB_NAME:[${env.JOB_NAME}]"
+                if ( "${env.JOB_NAME}".endsWith("-build") ) {
+                   env.BUILD_COMMAND = "build"
+                } else {
+                if ( "${env.JOB_NAME}".endsWith("-testsuite") ) {
                         env.BUILD_COMMAND = "testsuite"
                       } else {
                          currentBuild.result = 'ABORTED'
@@ -66,7 +66,7 @@ pipeline {
                       env.RERUN_FAILING_TESTS = 0
                     }
                     env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/build-wrapper.sh"
-               if ( "${env.BUILD_COMMAND}".startsWith("testsuite") ) {
+                    if ( "${env.BUILD_COMMAND}".startsWith("testsuite") ) {
                         def parent_jobname = "${env.JOB_NAME}".replace("-testsuite","-build")
                         assert ! "".equals(parent_jobname)
                         def lastSuccessfulBuildId = lookupLastSuccessfulBuildId(parent_jobname)
