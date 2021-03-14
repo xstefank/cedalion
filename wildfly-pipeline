@@ -85,7 +85,18 @@ pipeline {
                 sh label: '', script: 'pwd'
                 sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
                 archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
-                build wait: false, job: "${env.JOB_NAME}".replaceAll("-build","-testsuite")
+                findText(textFinders: [
+                    textFinder(regexp: /.INFO. BUILD FAILURE/, alsoCheckConsoleOutput: true, buildResult: 'UNSTABLE', changeCondition: 'MATCH_FOUND'),
+                    textFinder(regexp: /.INFO. BUILD ERROR/, alsoCheckConsoleOutput: true, buildResult: 'FAILURE', changeCondition: 'MATCH_FOUND')
+                ])
+                script {
+                    env.TESTSUITE_JOB_NAME = "${env.JOB_NAME}".replaceAll("-build","-              testsuite")
+                    try {
+                        build wait: false, job: "${env.TESTSUITE_JOB_NAME}"
+                    } catch (err) {
+                        echo "[NOTICE] No testsuite '${env.TESTSUITE_JOB_NAME}' associated to this job, no job triggered"
+                    }
+                }
             }
         }
       stage ('Testsuite') {
@@ -97,10 +108,6 @@ pipeline {
     }
     post {
         always {
-         findText(textFinders: [
-                textFinder(regexp: /.INFO. BUILD FAILURE/, alsoCheckConsoleOutput: true, buildResult: 'UNSTABLE', changeCondition: 'MATCH_FOUND'),
-                textFinder(regexp: /.INFO. BUILD ERROR/, alsoCheckConsoleOutput: true, buildResult: 'FAILURE', changeCondition: 'MATCH_FOUND')
-            ])
             script {
              try {
                   sh label: '', script: "${env.WORKSPACE}/hera/hera.sh stop"
