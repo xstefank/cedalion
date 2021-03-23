@@ -5,6 +5,13 @@ def lookupLastSuccessfulBuildId(String parent_jobname) {
   return lastSuccessfulBuildId
 }
 
+def determineBuildResult() {
+  findText(textFinders: [
+    textFinder(regexp: /.INFO. BUILD FAILURE/, alsoCheckConsoleOutput: true, buildResult: 'UNSTABLE', changeCondition: 'MATCH_FOUND'),
+    textFinder(regexp: /.INFO. BUILD ERROR/, alsoCheckConsoleOutput: true, buildResult: 'FAILURE', changeCondition: 'MATCH_FOUND')
+  ])
+}
+
 pipeline {
     agent any
 
@@ -20,7 +27,7 @@ pipeline {
 
     environment {
         HERA_USERNAME = 'jenkins'
-        HERA_HOSTNAME = 'thunder.next'
+        HERA_HOSTNAME = 'olympus'
     }
 
     stages {

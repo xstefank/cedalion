@@ -13,7 +13,7 @@ pipeline {
     }
 
     environment {
-        HERA_HOSTNAME = 'thunder.next'
+        HERA_HOSTNAME = 'olympus'
     }
 
     stages {
