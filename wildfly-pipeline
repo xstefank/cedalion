@@ -1,6 +1,6 @@
 def lookupLastSuccessfulBuildId(String parent_jobname) {
   echo "Fetching last successful build ID of parent job:" + parent_jobname
-  def lastSuccessfulBuildId = sh(script: "curl -s ${env.JENKINS_URL}/job/${parent_jobname}/lastSuccessfulBuild/buildNumber", returnStdout: true)
+  def lastSuccessfulBuildId = sh(script: "curl --insecure -s ${env.JENKINS_URL}/job/${parent_jobname}/lastSuccessfulBuild/buildNumber", returnStdout: true)
   echo "BUILD_ID: " + lastSuccessfulBuildId
   return lastSuccessfulBuildId
 }
