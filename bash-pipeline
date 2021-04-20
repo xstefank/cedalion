@@ -5,13 +5,10 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '30', artifactNumToKeepStr: '30'))
      }
 
-    parameters {
-    }
-
     stages {
         stage('Main') {
             steps {
-                //cleanWs()
+                cleanWs()
                 script {
                     echo "JOB_NAME:[${env.JOB_NAME}]"
                     echo "SCRIPT:[${env.PATH_TO_SCRIPT}]"
@@ -21,20 +18,24 @@ pipeline {
                     }
                     echo "GIT_REPOSITORY_BRANCH:[${env.GIT_REPOSITORY_BRANCH}]"
                 }
-                dir('workdir') {
-                  git url: "${env.GIT_REPOSITORY_URL}",
-                      branch: "${env.GIT_REPOSITORY_BRANCH}"
-                }
+
                 dir('hera') {
                   git 'https://github.com/jboss-set/hera.git'
                 }
 
+                dir('workdir') {
+                  git url: "${env.GIT_REPOSITORY_URL}",
+                      branch: "${env.GIT_REPOSITORY_BRANCH}"
+                }
+
                 script {
-                    env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/build-wrapper.sh"
-                    // Start container
+                    env.BUILD_SCRIPT = "${env.WORKSPACE}/workdir/${env.PATH_TO_SCRIPT}"
+                    env.WORKDIR = "${env.WORKSPACE}/workdir/"
                     sh label: '', script: "${env.WORKSPACE}/hera/hera.sh run"
                     sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
-                    archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
+                    archiveArtifacts artifacts: 'workdir/**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
+                    step([$class: "TapPublisher", testResults: "workdir/*.tap"])
+                    publishHTML([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'workdir', reportFiles: 'shellcheck.html', reportName: 'Shellcheck Report', reportTitles: ''])
                }
            }
         }
