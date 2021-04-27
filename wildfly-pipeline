@@ -97,7 +97,7 @@ pipeline {
                     textFinder(regexp: /.INFO. BUILD ERROR/, alsoCheckConsoleOutput: true, buildResult: 'FAILURE', changeCondition: 'MATCH_FOUND')
                 ])
                 script {
-                    env.TESTSUITE_JOB_NAME = "${env.JOB_NAME}".replaceAll("-build","-              testsuite")
+                    env.TESTSUITE_JOB_NAME = "${env.JOB_NAME}".replaceAll("-build","-testsuite")
                     try {
                         build wait: false, job: "${env.TESTSUITE_JOB_NAME}"
                     } catch (err) {
