@@ -9,11 +9,6 @@ pipeline {
         string(name: 'PULL_REQUEST_PROCESSOR_HOME', defaultValue: '/opt/tools/pr-processor/', description: 'pr-processor home')
     }
 
-    environment {
-        HERA_USERNAME = 'jenkins'
-        HERA_HOSTNAME = 'olympus'
-    }
-
     stages {
         stage('Prep') {
             steps {

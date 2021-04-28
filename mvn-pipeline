@@ -12,10 +12,6 @@ pipeline {
        string(name: 'POLL_PATTERN', defaultValue: 'H/5 * * * *', description: 'cron pattern to poll the SCM')
     }
 
-    environment {
-        HERA_HOSTNAME = 'olympus'
-    }
-
     stages {
         stage('Prep') {
             steps {

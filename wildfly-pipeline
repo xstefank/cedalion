@@ -25,11 +25,6 @@ pipeline {
         string(name: 'MAVEN_OPTS', defaultValue: '-Dhttps.protocols=TLSv1.2', description: 'Extra settings for Maven')
     }
 
-    environment {
-        HERA_USERNAME = 'jenkins'
-        HERA_HOSTNAME = 'olympus'
-    }
-
     stages {
         stage('Prep') {
             steps {
