@@ -19,11 +19,14 @@ pipeline {
 //        }
         stage ('Build') {
             steps {
+
                 dir('hera') {
                   git 'https://github.com/jboss-set/hera.git'
                 }
 
               script {
+                echo "WORKSPACE: ${env.WORKSPACE}"
+                sh label: 'lsWorspace', script: "ls ${env.WORKSPACE}"
                 env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/mvn-wrapper.sh"
                 git url: "${env.GIT_REPOSITORY_URL}",
                     branch: "${env.GIT_REPOSITORY_BRANCH}"
