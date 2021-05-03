@@ -26,10 +26,14 @@ pipeline {
 
               script {
                 echo "WORKSPACE: ${env.WORKSPACE}"
-                sh label: 'lsWorspace', script: "ls ${env.WORKSPACE}"
+                sh label: 'lsWorspace', script: "ls ${env.WORKSPACE}/hera/"
                 env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/mvn-wrapper.sh"
-                git url: "${env.GIT_REPOSITORY_URL}",
-                    branch: "${env.GIT_REPOSITORY_BRANCH}"
+                dir('workdir') {
+                  git url: "${env.GIT_REPOSITORY_URL}",
+                      branch: "${env.GIT_REPOSITORY_BRANCH}"
+                }
+                sh label: 'lsWorspace', script: "ls -l ${env.WORKSPACE}/hera/"
+                sh label: 'lsWorspace', script: "chmod +x ${env.WORKSPACE}/hera/*.sh"
                 sh label: '', script: "${env.WORKSPACE}/hera/hera.sh run"
                 sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
                 publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: '.', reportFiles: 'bugclerk-report.html', reportName: 'HTML Report', reportTitles: ''])
