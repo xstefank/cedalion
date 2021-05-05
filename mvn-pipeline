@@ -5,13 +5,6 @@ pipeline {
        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '2'))
      }
 
-    parameters {
-       string(name: 'JAVA_HOME', defaultValue: '/opt/oracle/java/', description: 'Java home')
-       string(name: 'MAVEN_HOME', defaultValue: '/opt/tools/apache-maven-3.6.3', description: 'Maven home')
-       string(name: 'CRON_PATTERN', defaultValue: 'H/5 * * * *', description: 'cron pattern to trigger the job')
-       string(name: 'POLL_PATTERN', defaultValue: 'H/5 * * * *', description: 'cron pattern to poll the SCM')
-    }
-
     stages {
         stage('Prep') {
             steps {
@@ -19,11 +12,12 @@ pipeline {
                 dir('hera') {
                   git 'https://github.com/jboss-set/hera.git'
                 }
+
                 timeout(time: 10) {
                     script {
                         sh label: '', script: "echo WORKSPACE: ${env.WORKSPACE}/"
                         //sh label: '', script: "PWD: ${env.PWD}"
-                        sh label: '', script: "ls ${env.WORKSPACE}/"
+                        sh label: '', script: "ls ${env.WORKSPACE}/hera/"
 
                         // warning, GIT_BRANCH var alreads points to pipeline's branch
                         if ( env.GIT_REPOSITORY_BRANCH == null || "".equals("${env.GIT_REPOSITORY_BRANCH}") ) {
