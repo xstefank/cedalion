@@ -5,18 +5,13 @@ pipeline {
     options {
       buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
     }
-    parameters {
-       string(name: 'JAVA_HOME', defaultValue: '/opt/oracle/java/', description: 'Java home')
-       string(name: 'MAVEN_HOME', defaultValue: '/opt/tools/apache-maven-3.6.3', description: 'Maven home')
-       string(name: 'MAVEN_OPTS', defaultValue: '', description: 'Extra settings for Maven')
-    }
 
     stages {
-//        stage('Prep') {
-//            steps {
-//                cleanWs()
-//            }
-//        }
+        stage('Prep') {
+            steps {
+                cleanWs()
+            }
+        }
         stage ('Build') {
             steps {
 
