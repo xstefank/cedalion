@@ -19,9 +19,12 @@ pipeline {
                 dir('hera') {
                   git 'https://github.com/jboss-set/hera.git'
                 }
-
                 timeout(time: 10) {
                     script {
+                        sh label: '', script: "echo WORKSPACE: ${env.WORKSPACE}/"
+                        //sh label: '', script: "PWD: ${env.PWD}"
+                        sh label: '', script: "ls ${env.WORKSPACE}/"
+
                         // warning, GIT_BRANCH var alreads points to pipeline's branch
                         if ( env.GIT_REPOSITORY_BRANCH == null || "".equals("${env.GIT_REPOSITORY_BRANCH}") ) {
                           env.GIT_REPOSITORY_BRANCH = "master"
