@@ -5,7 +5,7 @@ def lookupLastSuccessfulBuildId(String parent_jobname) {
   if ( "${lastSuccessfulBuildId}".equals("0") ) {
     error("Build failed because parent job has never run.")
   }
-  return lastSuccessfulBuildId
+  return lastSuccessfulBuildId.trim()
 }
 
 def determineBuildResult() {
