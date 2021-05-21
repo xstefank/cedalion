@@ -1,6 +1,6 @@
 def lookupLastSuccessfulBuildId(String parent_jobname) {
   echo "Fetching last successful build ID of parent job:" + parent_jobname
-  def lastSuccessfulBuildId = sh(script:"/var/jenkins_home/fetchLastSuccessfulBuildId.sh ${parent_jobname}")
+  def lastSuccessfulBuildId = sh(script:"/var/jenkins_home/fetchLastSuccessfulBuildId.sh ${parent_jobname}", returnStdout: true)
   echo "PARENT JOB LAST SUCCESSFUL BUILD ID: " + lastSuccessfulBuildId
   if ( "${lastSuccessfulBuildId}".equals("0") ) {
     error("Build failed because parent job has never run.")
