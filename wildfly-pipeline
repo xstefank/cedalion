@@ -25,7 +25,6 @@ pipeline {
     parameters {
       string(name: 'RERUN_FAILING_TESTS', defaultValue: '0', description: 'How many time should Maven try to rerun failing tests')
         // -Dhttps.protocols=TLSv1.2 needs to move to Harmonia?
-        string(name: 'MAVEN_OPTS', defaultValue: '-Dhttps.protocols=TLSv1.2', description: 'Extra settings for Maven')
     }
 
     stages {
