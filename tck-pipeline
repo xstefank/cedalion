@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+
+   options {
+        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
+     }
+
+    stages {
+        stage('Main') {
+            steps {
+                cleanWs()
+                script {
+                    echo "JOB_NAME:[${env.JOB_NAME}]"
+                    echo "SCRIPT:[${env.PATH_TO_SCRIPT}]"
+                    // warning, GIT_BRANCH var alreads points to pipeline's branch
+                    if ( env.GIT_REPOSITORY_BRANCH == null || "".equals("${env.GIT_REPOSITORY_BRANCH}") ) {
+                      env.GIT_REPOSITORY_BRANCH = "master"
+                    }
+                    echo "GIT_REPOSITORY_BRANCH:[${env.GIT_REPOSITORY_BRANCH}]"
+                }
+
+                dir('hera') {
+                  git 'https://github.com/jboss-set/hera.git'
+                }
+                
+                dir('harmonia') {
+                  git url: 'https://github.com/spyrkob/harmonia.git',
+                      branch: 'tckdev'
+                }
+
+                dir('workdir') {
+                  git url: "${env.GIT_REPOSITORY_URL}",
+                      branch: "${env.GIT_REPOSITORY_BRANCH}"
+                }
+
+                script {
+                    env.BUILD_SCRIPT = "${env.WORKSPACE}/workdir/${env.PATH_TO_SCRIPT}"
+                    sh label: '', script: "${env.WORKSPACE}/hera/hera.sh run"
+                    sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
+                    archiveArtifacts artifacts: 'build/target/wildfly.zip,build.txt,build.name', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
+               }
+           }
+        }
+    }
+    post {
+        always {
+            script {
+             try {
+                  sh label: '', script: "${env.WORKSPACE}/hera/hera.sh stop"
+              } catch (err) {
+                  echo "Error while deleting container: ${err}"
+              }
+            }
+        }
+    }
+}
