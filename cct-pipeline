@@ -1,0 +1,75 @@
+pipeline {
+    agent any
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
+    }
+
+    parameters {
+        string(name: 'NEXUS_URL', defaultValue: 'https://nexus-nexus.6923.rh-us-east-1.openshiftapps.com/',
+            description: 'The URL of the nexus containing continuous component builds')
+        string(name: 'NEXUS_REPO', defaultValue: 'components',
+            description: 'The name of the nexus repository containing continuous component builds')
+    }
+
+    stages {
+        stage('Prep') {
+            steps {
+                cleanWs()
+
+                dir('workdir') {
+                    git url: "${env.GIT_REPOSITORY_URL}",
+                        branch: "${env.GIT_REPOSITORY_BRANCH}"
+                }
+
+                dir('hera') {
+                    git 'https://github.com/jboss-set/hera.git'
+                }
+
+                dir('harmonia') {
+                    git branch: 'olympus', url: 'https://github.com/jboss-set/harmonia.git'
+                }
+
+                script {
+                    env.BUILD_SCRIPT = "${env.WORKSPACE}/hera/build-wrapper.sh"
+                }
+
+                // Start container
+                sh label: '', script: "${env.WORKSPACE}/hera/hera.sh run"
+            }
+        }
+        stage ('Build') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'cct-nexus-credentials', passwordVariable: 'nexusPassword', usernameVariable: 'nexusUsername')]) {
+                    script {
+                        env.NEXUS_CREDENTIALS="$nexusUsername:$nexusPassword"
+                    }
+                    sh label: '', script: 'pwd'
+                    sh label: '', script: "${env.WORKSPACE}/hera/hera.sh job"
+                    archiveArtifacts artifacts: '**/*', fingerprint: true, followSymlinks: false, onlyIfSuccessful: true
+                    findText(textFinders: [
+                        textFinder(regexp: /.INFO. BUILD FAILURE/, alsoCheckConsoleOutput: true, buildResult: 'UNSTABLE', changeCondition: 'MATCH_FOUND'),
+                        textFinder(regexp: /.INFO. BUILD ERROR/, alsoCheckConsoleOutput: true, buildResult: 'FAILURE', changeCondition: 'MATCH_FOUND')
+                    ])
+                    junit "**/target/surefire-reports/*.xml"
+                }
+            }
+        }
+    }
+    post {
+        always {
+            script {
+             try {
+                  sh label: '', script: "${env.WORKSPACE}/hera/hera.sh stop"
+              } catch (err) {
+                  echo "Error while deleting container: ${err}"
+              }
+            }
+        }
+        failure {
+            mail to: 'belaran@redhat.com', from: 'rpelisse@redhat.com',
+                subject: "Build: ${env.JOB_NAME} - Failed",
+                body: "Job Failed - \"${env.JOB_NAME}\" build: ${env.BUILD_NUMBER}\n\nView the log at:\n ${env.BUILD_URL}\n\nBlue Ocean:\n${env.RUN_DISPLAY_URL}"
+        }
+    }
+}
