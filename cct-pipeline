@@ -23,11 +23,11 @@ pipeline {
                 }
 
                 dir('hera') {
-                    git 'https://github.com/jboss-set/hera.git'
+                    git branch: 'cct', url: 'https://github.com/xstefank/hera.git'
                 }
 
                 dir('harmonia') {
-                    git branch: 'olympus', url: 'https://github.com/jboss-set/harmonia.git'
+                    git branch: 'cct-olympus', url: 'https://github.com/xstefank/harmonia.git'
                 }
 
                 script {
